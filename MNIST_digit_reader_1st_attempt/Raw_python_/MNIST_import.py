@@ -60,7 +60,13 @@ dataloader = MnistDataloader(
     test_images_filepath,
     test_labels_filepath,
 )
+
+# Just want to import 10% of the testing data for code testing purposes
+# The () are tuples. Placing x-train and y-train in () prevents accidental changing of the values.
+# Y is the labels, X is the images. The labels are the numbers 0-9 that correspond to the images.
 (x_train, y_train), (x_test, y_test) = dataloader.load_data()
+(x_train, y_train) = x_train[: int(len(x_train) * 0.1)], y_train[: int(len(y_train) * 0.1)]
+(x_test, y_test) = x_test[: int(len(x_test) * 0.1)], y_test[: int(len(y_test) * 0.1)]
 
 matrix_data = np.random.rand(100, 100)
 

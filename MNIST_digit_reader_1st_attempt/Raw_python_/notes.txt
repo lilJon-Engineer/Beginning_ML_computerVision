@@ -1,0 +1,8 @@
+As I keep working on this iteration, many other test scenarios come to mind that I'll be trying
+
+1. Stochastic vs batch vs mini-batch gradient descent
+2. Using pyTorch and tensorFlow to compute matrix/vector math
+3. Finding other S and A values for the squashing tanh function
+4. Using the second derivative of the curvature
+5. Using momentum in the gradient descent
+6. 
