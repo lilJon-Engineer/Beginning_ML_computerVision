@@ -5,4 +5,18 @@ As I keep working on this iteration, many other test scenarios come to mind that
 3. Finding other S and A values for the squashing tanh function
 4. Using the second derivative of the curvature
 5. Using momentum in the gradient descent
-6. 
+6. I also plan on viewing how the weights change. To do this, each case will have associated weights that are saved into a file. Then, take the vector, and turn it into it's image form. Plot the weight v case graphic normal to the image. Break up the image into rows, and display the plot for each row 1 at a time. 
+I approximate this to about 1.88 Gb in storage per epoch, so I'm only trying this once. Also, this would probably be best done after
+7. Step across various learning rates
+8. Reducing the bit size of the pixel datatype can reduce computation cost. We can test out how low in bit representation accuracy we can go, and still get good training.
+
+Difference between numpy arrays and embedded lists is this. A numpy array stores arrays as a contiguous list in memory, with metadata of the shape and the 'strides'. The strides dictate how many values to skip over to get to the next 'row'. A list is simply a container of pointing vectors. A list of 28 sublists, where each sublist has 28 values, is a container of pointers to various memory. The sublists were created at different times, so their memory allocation was all over the storage. This significantly increases calling speed.
+
+Numpy initializes object values as float64 datatype. Pytorch uses float32, which most gpu's are optimized for. Math I think outputs a regular float dtype.
+
+I would expect numpy and torch to have very similar training times. However, an epoch takes around 2.5s for numpy, but 7s for torch. According to claude, the reason for this is that torch pays a fixed cost per function call which happens 60k times. That cost is the torch dispatcher (ATen), which checks the tensor device (CPU vs GPU) and then routes. It checks dtype and layout to pick the right compiled kernel. Checks whether autograd needs to record this operation into a computation graph (even with requires_grad=False, there is a check cost). Crosses the python C++ boundary through a more general pluggable dispatch system design to support dozens of backends (CPU, CUDA, MPS, quantized, etc.). Because I can't compute on GPU, there is little acceleration that comes from using Torch, so it's easily over-powered by the cost. This cost can be reduced by Batch-gradient descent (BGD) instead of stochastic gradient descent (SGD), as there are fewer calls. 
+
+What Torch does have is auto-grad, that computes the gradient descent of cost function in an optimized fashion. this is used by the command .backward(). This backward autograd actually still isn't great. It slows the compute down to 30s per epoch. Part of the reason is that tanh needs to save its own output for teh BP compute, and tracking. Apparently, when you're working with much larger matrices with BGD, it's much faster. It's also faster when hand-deriving gradients becomes the bottleneck instead of raw per-sample compute. This is apparent when you use various non-linear activation functions, add more layers, or try other architectures.
+
+leaf tensor: a starting node in a computation graph, or not created by any differentiable operation recorded in the tracking engine. So things like weight matrices before back-prop, or the input vector. 
+
