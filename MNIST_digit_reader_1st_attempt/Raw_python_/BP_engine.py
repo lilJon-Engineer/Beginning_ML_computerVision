@@ -97,7 +97,7 @@ epochs = 4 # Number of iterations of SGD
 # Create the file if it does not exist
 error_file_path.touch(exist_ok=True)
 error_file_path.write_text("")   # reset before starting a new full training run
-
+print("This will take around 30 minutes to 3 hours to complete if you're training on the full 60k images")
 with open(error_file_path, "a") as file:
     for z in range(epochs):
         start = time.time()
